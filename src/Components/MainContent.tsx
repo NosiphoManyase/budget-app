@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import Expenses from "./Expenses";
 import PopUpExpenses from "./PopUpExpenses";
 import { EyeOpenIcon } from '@radix-ui/react-icons';
-import FetchData from "./FetchData";
-// import handler from "@/pages/api/hello";
+import { fetchData, updateData } from "@/data/data";
 
-type BudgetCategory = {
+export type BudgetCategory = {
   userId: string,
   categoryName: string;
   allocationAmount: number;
@@ -15,7 +14,6 @@ type BudgetCategory = {
 
 const MainContent = () => {
   const [budgetCategories, setBudgetCategories] = useState<BudgetCategory[]>([]);
-  // const [tempBudgetCategories, setTempBudgetCategories] = useState<BudgetCategory[]>([]);
   const [creatingBudget, setCreatingBudget] = useState(false);
   const [categoryName, setCategoryName] = useState("");
   const [allocationAmount, setAllocationAmount] = useState(0);
@@ -26,36 +24,8 @@ const MainContent = () => {
   const userId = 'Nosi123'
 
   useEffect(() => {
-    
-    const getData = fetch( categoriesApiUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }).then(res => res.json())
-    .then(data =>{ 
-      //remove first line with headings
-      data.values.splice(0, 1)
-
-      //get all categories under the user
-      const currentUserCategories: string [] = data.values.filter((categories: string[]) => categories[0] === userId)
-      console.log(currentUserCategories)
-
-      //save categories in object format to budget categories
-      const allCategories: BudgetCategory[] = currentUserCategories.map((categories) =>(
-        {
-          userId: categories[0],
-          categoryName: categories[1],
-          allocationAmount: parseFloat(categories[2]),
-          amountUsed: parseFloat(categories[3]),
-          percentUsed: categories[4],
-        }
-      ))
-        console.log(allCategories)
-      setBudgetCategories(allCategories)
-    })
-    // console.log(budgetCategories)
-    
+  
+    fetchData(categoriesApiUrl, userId, setBudgetCategories)
     
   }, [updateExpense]);
 
@@ -77,33 +47,16 @@ const MainContent = () => {
       }
 
       const newCategoryArray = Object.values(newCategory)
-
-      // add Data to sheet
-    const addToData = fetch(categoriesApiUrl, {
-      method: 'POST',
-      body: JSON.stringify([
-        newCategoryArray
-      ]),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-
+      updateData(newCategoryArray, categoriesApiUrl)
+      
       setCategoryName("");
       setAllocationAmount(0);
-      // Store updated categories in local storage
-      // localStorage.setItem(
-      //   "budgetCategories",
-      //   JSON.stringify(updatedCategories)
-      // );
     }
   };
 
   const handleDone = () => {
     setCreatingBudget(false);
     setUpdateExpense(true);
-    // setBudgetCategories([...budgetCategories, ...tempBudgetCategories]);
-    // setTempBudgetCategories([]);
   };
 
   const showCategoryExpenses = (categoryName: string) => {

@@ -1,4 +1,4 @@
-import {fetchData} from '../services/googleSheetsClient'
+import {fetchData} from '../data/data'
 
 interface FetchDataProps {
   useRange: string;

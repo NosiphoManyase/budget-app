@@ -18,6 +18,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/api/googleSheetsServer.js", "src/services/googleSheetsClient.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/pages/api/googleSheetsServer.js", "src/data/data.ts"],
   "exclude": ["node_modules"]
 }
