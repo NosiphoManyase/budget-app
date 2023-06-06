@@ -6,47 +6,57 @@ import FetchData from "./FetchData";
 // import handler from "@/pages/api/hello";
 
 type BudgetCategory = {
+  userId: string,
   categoryName: string;
   allocationAmount: number;
   amountUsed: number;
   percentUsed: string;
-  expenses: [];
 };
 
 const MainContent = () => {
-  const [budgetCategories, setBudgetCategories] = useState<BudgetCategory[]>(
-    []
-  );
-  const [tempBudgetCategories, setTempBudgetCategories] = useState<
-    BudgetCategory[]
-  >([]);
+  const [budgetCategories, setBudgetCategories] = useState<BudgetCategory[]>([]);
+  // const [tempBudgetCategories, setTempBudgetCategories] = useState<BudgetCategory[]>([]);
   const [creatingBudget, setCreatingBudget] = useState(false);
   const [categoryName, setCategoryName] = useState("");
   const [allocationAmount, setAllocationAmount] = useState(0);
   const [showExpense, setShowExpense] = useState(false);
   const [updateExpense, setUpdateExpense] = useState(false);
 
+  const categoriesApiUrl = '/api/googleSheetsServer?id=1ULLXHjmMf0ZdDy7XSaWrdel_xbESp3lAwfcLISHQ6Pk'
+  const userId = 'Nosi123'
+
   useEffect(() => {
-
-    const storedCategories = localStorage.getItem("budgetCategories");
-    if (storedCategories) {
-      const parsedCategories = JSON.parse(storedCategories);
-      setTempBudgetCategories(parsedCategories);
-      setBudgetCategories(parsedCategories);
-    }
     
-
-    //getData
-    const sheetData = fetch('/api/googleSheetsServer', {
-      method: 'POST',
-      body: JSON.stringify([
-        ['nosi123', 'Camp', 'Car'],
-      ]),
+    const getData = fetch( categoriesApiUrl, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
+    }).then(res => res.json())
+    .then(data =>{ 
+      //remove first line with headings
+      data.values.splice(0, 1)
+
+      //get all categories under the user
+      const currentUserCategories: string [] = data.values.filter((categories: string[]) => categories[0] === userId)
+      console.log(currentUserCategories)
+
+      //save categories in object format to budget categories
+      const allCategories: BudgetCategory[] = currentUserCategories.map((categories) =>(
+        {
+          userId: categories[0],
+          categoryName: categories[1],
+          allocationAmount: parseFloat(categories[2]),
+          amountUsed: parseFloat(categories[3]),
+          percentUsed: categories[4],
+        }
+      ))
+        console.log(allCategories)
+      setBudgetCategories(allCategories)
     })
-    // console.log(sheetData)
+    // console.log(budgetCategories)
+    
+    
   }, [updateExpense]);
 
   const handleCreateBudget = () => {
@@ -55,31 +65,45 @@ const MainContent = () => {
 
   const handleAddCategory = () => {
     const amount = allocationAmount;
+  
     if (categoryName && !isNaN(amount)) {
+
       const newCategory: BudgetCategory = {
+        userId,
         categoryName,
         allocationAmount: amount,
         amountUsed: 0,
         percentUsed: "0",
-        expenses: [],
-      };
-      const updatedCategories = [...tempBudgetCategories, newCategory];
-      setTempBudgetCategories(updatedCategories);
+      }
+
+      const newCategoryArray = Object.values(newCategory)
+
+      // add Data to sheet
+    const addToData = fetch(categoriesApiUrl, {
+      method: 'POST',
+      body: JSON.stringify([
+        newCategoryArray
+      ]),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+
       setCategoryName("");
       setAllocationAmount(0);
-
       // Store updated categories in local storage
-      localStorage.setItem(
-        "budgetCategories",
-        JSON.stringify(updatedCategories)
-      );
+      // localStorage.setItem(
+      //   "budgetCategories",
+      //   JSON.stringify(updatedCategories)
+      // );
     }
   };
 
   const handleDone = () => {
     setCreatingBudget(false);
-    setBudgetCategories([...budgetCategories, ...tempBudgetCategories]);
-    setTempBudgetCategories([]);
+    setUpdateExpense(true);
+    // setBudgetCategories([...budgetCategories, ...tempBudgetCategories]);
+    // setTempBudgetCategories([]);
   };
 
   const showCategoryExpenses = (categoryName: string) => {
@@ -163,17 +187,7 @@ const MainContent = () => {
           </div>
         )}
     </div>
-  );
-};
+  )
+}
 
 export default MainContent;
-
-// const authClient = new google.auth.GoogleAuth({
-//   credentials: {
-//     client_email: process.env.GOOGLE_CLIENT_EMAIL,
-//     private_key: process.env.GOOGLE_PRIVATE_KEY,
-//   },
-//   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-// });
-
-// export const sheets = google.sheets({ version: 'v4', auth: authClient });
