@@ -18,38 +18,58 @@ async function handler(req, res) {
 
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId: req.query.id,
-    range: 'Categories!A:E'
+    range: `${req.query.category}!A:E`
   })
 
   //get last row in sheet
   const lastRow = response.data.values ? response.data.values.length + 1: 1
-  const range = `Categories!A${lastRow}:K${lastRow}`
+  const range = `${req.query.category}!A${lastRow}:E${lastRow}`
 
   try {
 
     if (req.method === "POST") {
-      const budgetCategories = req.body;
 
-      const response = await sheets.spreadsheets.values.append({
-        spreadsheetId: req.query.id,
-        range: range,
-        requestBody: {
-          values: budgetCategories,
-        },
-        valueInputOption: 'RAW',
+      //if updating
+      if(req.body.operation === "update") {
+        const data = req.body.data;
+
+        const response = await sheets.spreadsheets.values.append({
+          spreadsheetId: req.query.id,
+          range: req.query.category,
+          requestBody: {
+            values: data,
+          },
+          valueInputOption: 'RAW',
+        });
+      }else if(req.body.operation === 'delete'){
+        // if deleting expenses/expense
+        const deleteRequests = req.body.deleteRequests
+        // if deleting category
+        const deleteRequest = req.body.deleteRequest
+        
+   
+        const response = await sheets.spreadsheets.batchUpdate({
+          spreadsheetId: req.query.id,
+          resource:{ 
+            requests: deleteRequests?deleteRequests:deleteRequest,
+          },   
       });
+
+      }
+
+      res.status(200).json({ message: res.data });
 
     }else if(req.method === 'GET'){
       const data = response.data
       res.json(data)
+      
     }
 
   } catch (error) {
     console.error("Google Sheets API Error:", error);
     res.status(500).json({ message: "Internal Server Error" });
-  }
+  } 
 
-  res.status(200).json({ message: res.data });
 }
 
 export default handler;

@@ -1,11 +1,13 @@
 import { BudgetCategory } from "@/Components/MainContent"
 
-export const fetchData = (categoriesApiUrl: string,
+const ApiUrl = '/api/googleSheetsServer?id=1ULLXHjmMf0ZdDy7XSaWrdel_xbESp3lAwfcLISHQ6Pk'
+
+export const fetchData = (
    userId: string,
-   setBudgetCategories: React.Dispatch<React.SetStateAction<BudgetCategory[]>>
+   sheetName: string,
 ) => {
 
-  const getData = fetch( categoriesApiUrl, {
+  return fetch( `${ApiUrl}&category=${sheetName}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -15,37 +17,115 @@ export const fetchData = (categoriesApiUrl: string,
     //remove first line with headings
     data.values.splice(0, 1)
 
-    //get all categories under the user
-    const currentUserCategories: string [] = data.values.filter((categories: string[]) => categories[0] === userId)
-    console.log(currentUserCategories)
-
-    //save categories in object format to budget categories
-    const allCategories: BudgetCategory[] = currentUserCategories.map((categories) =>(
-      {
-        userId: categories[0],
-        categoryName: categories[1],
-        allocationAmount: parseFloat(categories[2]),
-        amountUsed: parseFloat(categories[3]),
-        percentUsed: categories[4],
-      }
-    ))
-      console.log(allCategories)
-    setBudgetCategories(allCategories)
+    //get all rows of data under the user
+    const rows: string [] = data.values.filter((row: string[]) => row[0] === userId)
+    
+    return rows;  
   }) 
 
 }
 
-export const updateData = (newCategoryArray: (string | number) [], categoriesApiUrl: string) => {
+export const updateData = (newData: (string | number) [], sheetName: string) => {
 
   // add Data to sheet
-  const addToData = fetch(categoriesApiUrl, {
+  const addToData = fetch(`${ApiUrl}&category=${sheetName}`, {
     method: 'POST',
-    body: JSON.stringify([
-      newCategoryArray
-    ]),
+    body: JSON.stringify({
+      operation: 'update',
+      data: [newData],
+  }),
     headers: {
       'Content-Type': 'application/json',
     },
   })
 }
+
+export const deleteExpenses = ( categoryName: string, userId: string, expenseName?: string) => {
+  
+  return fetchData(userId, 'Expenses')
+    .then(data => {
+      console.log(data)
+
+      const sortIndices = data.map((data, i) => {
+        if(expenseName){
+          if (data[0] === userId && data[1] === categoryName && data[2] === expenseName) {
+            return i;
+          }
+          else {
+            return -1; 
+          }
+        }else{
+          if(data[0] === userId && data[1] === categoryName){
+            return i;
+          }
+          else {
+            return -1; 
+          }
+        }
+      }).filter(index => index !== -1);
+
+      const indices: number[] = sortIndices;
+      console.log(indices)
+      
+      const deleteRequests = indices.map(rowIndex => {
+        return {
+          deleteDimension: {
+            range: {
+              sheetId: '1828482324',
+              dimension: 'ROWS',
+              startIndex: rowIndex +1,
+              endIndex: rowIndex + 2,
+            },
+          },
+        };
+      }).reverse();     
+
+      console.log(deleteRequests)
+
+      return fetch(`${ApiUrl}&category=Expenses`, {
+        method: 'POST',
+        body: JSON.stringify({
+          operation: 'delete',
+          deleteRequests
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    });
+}
+
+
+export const deleteCategory = ( categoryName: string, userId: string) => {
+  
+  return fetchData(userId, 'Categories')
+    .then(data => {
+
+      const categoryIndex = data.findIndex(category => category[0] === userId && category[1] === categoryName);
+      console.log(categoryIndex)
+      
+      const deleteRequest = {
+          deleteDimension: {
+            range: {
+              sheetId: '0',
+              dimension: 'ROWS',
+              startIndex: categoryIndex + 1,
+              endIndex: categoryIndex + 2,
+            },
+          },
+        }     
+
+      return fetch(`${ApiUrl}&category=Categories`, {
+        method: 'POST',
+        body: JSON.stringify({
+          operation: 'delete',
+          deleteRequest
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    });
+}
+
 

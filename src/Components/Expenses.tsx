@@ -1,3 +1,4 @@
+import { deleteExpenses, fetchData, updateData } from '@/data/data';
 import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
 
 type Expense = {
@@ -26,70 +27,48 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdateExpense, u
   const [newExpenseName, setNewExpenseName] = useState('');
   const [newExpenseAmount, setNewExpenseAmount] = useState('');
 
+  const sheetName = 'Expenses'
+  const userId = 'Nosi123'
+
   useEffect(() => {
-    console.log('update expenses')
-    const storedCategories = localStorage.getItem('budgetCategories');
-  
-    if (storedCategories) {
-      console.log('storedCategories')
-      console.log(categoryName)
-      //get categories, find current category clicked to show
-      const parsedCategories: BudgetCategory[] = JSON.parse(storedCategories);
-      const categoryIndex = parsedCategories.findIndex(category => category.categoryName === categoryName)
-      console.log(parsedCategories[categoryIndex].expenses)
-      if(!updateExpense){
-        
-        setExpenses(parsedCategories[categoryIndex].expenses)
-      } else {
-        
-        if(categoryIndex !== -1){
-          const updatedCategories = [...parsedCategories];
-
-          //update amount used and percentUsed
-          const expenseTotal = expenses.reduce((accumulator, currentVal) =>(
-            accumulator + currentVal.amount
-          ), 0)
-        
-          const allocatedAmount = parsedCategories[categoryIndex].allocationAmount
-          const amountUsed = allocatedAmount - expenseTotal
-          console.log(allocatedAmount)
-          console.log(expenseTotal)
-          const percent = (expenseTotal / allocatedAmount) * 100
-
-          updatedCategories[categoryIndex] = {
-            ...updatedCategories[categoryIndex],
-            amountUsed: expenseTotal,
-            percentUsed: `${percent}`,
-            expenses: expenses, // Set the updated expenses array
-          }
-          localStorage.setItem('budgetCategories', JSON.stringify(updatedCategories))
-          console.log('at amountUsed')
-          setUpdateExpense(false)
-        }
-      }
-    }
+    
+    fetchData(userId, sheetName)
+    // get data from current category shown
+      .then(rows => rows.filter(row => row[1] === categoryName))
+      .then(rows => {
+          console.log(rows)
+          const allExpenses: Expense[] = rows.map(row => (
+            {
+              name: row[2],
+              amount: parseInt(row[3])
+            }
+          ))
+        setExpenses(allExpenses);
+      })
+      
   }, [updateExpense]);
 
   const handleAddExpense = () => {
-    const amount = parseFloat(newExpenseAmount);
-    if (newExpenseName && !isNaN(amount)) {
-      const newExpense: Expense = {
-        name: newExpenseName,
-        amount: amount,
-      };
-      setExpenses([...expenses, newExpense]);
+    const expense = [userId, categoryName, newExpenseName, newExpenseAmount]
+    updateData(expense, sheetName)
+    
+      // N.B to fix sheet doesn't update before useeffect reruns
       setNewExpenseName('');
       setNewExpenseAmount('');
       setAddExpense(false)
       setUpdateExpense(true)
-    }
+    // }
   };
 
   const deleteExpense = (expenseName: string) => {
+
+    deleteExpenses(categoryName, userId, expenseName)
+    .then(res => console.log(res))
+    .catch(err => console.log(err))
     
-     const updatedExpenses = expenses.filter(expense => expense.name !== expenseName)
-     console.log(updatedExpenses);
-     setExpenses(updatedExpenses);
+    //  const updatedExpenses = expenses.filter(expense => expense.name !== expenseName)
+    //  console.log(updatedExpenses);
+    //  setExpenses(updatedExpenses);
      setUpdateExpense(true)
 
   }

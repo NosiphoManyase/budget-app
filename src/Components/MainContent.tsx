@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Expenses from "./Expenses";
 import PopUpExpenses from "./PopUpExpenses";
 import { EyeOpenIcon } from '@radix-ui/react-icons';
-import { fetchData, updateData } from "@/data/data";
+import { deleteCategory, deleteExpenses, fetchData, updateData } from "@/data/data";
 
 export type BudgetCategory = {
   userId: string,
@@ -20,12 +20,28 @@ const MainContent = () => {
   const [showExpense, setShowExpense] = useState(false);
   const [updateExpense, setUpdateExpense] = useState(false);
 
-  const categoriesApiUrl = '/api/googleSheetsServer?id=1ULLXHjmMf0ZdDy7XSaWrdel_xbESp3lAwfcLISHQ6Pk'
+  const sheetName = 'Categories'
   const userId = 'Nosi123'
 
   useEffect(() => {
   
-    fetchData(categoriesApiUrl, userId, setBudgetCategories)
+     fetchData( userId, sheetName)
+        .then(rows => {
+          //save categories in object format to budget categories
+        const allCategories: BudgetCategory[] = rows.map((categories) =>(
+          {
+            userId: categories[0],
+            categoryName: categories[1],
+            allocationAmount: parseFloat(categories[2]),
+            amountUsed: parseFloat(categories[3]),
+            percentUsed: categories[4],
+          }
+        ))
+          setBudgetCategories(allCategories)
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
     
   }, [updateExpense]);
 
@@ -47,8 +63,8 @@ const MainContent = () => {
       }
 
       const newCategoryArray = Object.values(newCategory)
-      updateData(newCategoryArray, categoriesApiUrl)
-      
+      updateData(newCategoryArray, sheetName) 
+
       setCategoryName("");
       setAllocationAmount(0);
     }
@@ -63,6 +79,11 @@ const MainContent = () => {
     setShowExpense(true);
     setCategoryName(categoryName);
   };
+
+  const handleDeleteCategory = (categoryName: string) => {
+    deleteExpenses(categoryName, userId);
+    deleteCategory(categoryName, userId)
+  }
 
   return (
     <div className="flex w-full h-screen px-4 py-4">
@@ -104,6 +125,7 @@ const MainContent = () => {
                     <p>Amount Used</p>
                     <p>Percent Used</p>
                     <p>Expenses</p>
+                    <p>---</p>
                   </div>
                   {budgetCategories.map((category, index) => (
                     <div key={index} className="flex justify-between">
@@ -122,6 +144,7 @@ const MainContent = () => {
                       >
                         <EyeOpenIcon />
                       </p>
+                      <p onClick={() => handleDeleteCategory(category.categoryName)}>delete</p>
                     </div>
                   ))}
                 </div>
