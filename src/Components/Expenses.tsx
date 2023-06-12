@@ -1,4 +1,4 @@
-import { deleteExpenses, fetchData, updateData } from '@/data/data';
+import { deleteExpenses, fetchData, updateAmounts, updateData } from '@/data/data';
 import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
 
 type Expense = {
@@ -8,8 +8,8 @@ type Expense = {
 
 type ExpensesProps = {
   setShowExpense: Dispatch<SetStateAction<boolean>>;
-  setUpdateExpense: Dispatch<SetStateAction<boolean>>;
-  updateExpense: boolean;
+  setUpdate: Dispatch<SetStateAction<boolean>>;
+  update: boolean;
   categoryName: string;
 };
 
@@ -21,7 +21,7 @@ type BudgetCategory = {
   expenses: Expense[]
 };
 
-const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdateExpense, updateExpense, categoryName}) => {
+const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdate, update, categoryName}) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [addExpense, setAddExpense] = useState(false)
   const [newExpenseName, setNewExpenseName] = useState('');
@@ -36,7 +36,7 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdateExpense, u
     // get data from current category shown
       .then(rows => rows.filter(row => row[1] === categoryName))
       .then(rows => {
-          console.log(rows)
+          console.log('useffect running')
           const allExpenses: Expense[] = rows.map(row => (
             {
               name: row[2],
@@ -45,32 +45,26 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdateExpense, u
           ))
         setExpenses(allExpenses);
       })
-      
-  }, [updateExpense]);
+      setUpdate(false)
+  }, [update]);
 
   const handleAddExpense = () => {
     const expense = [userId, categoryName, newExpenseName, newExpenseAmount]
     updateData(expense, sheetName)
+    updateAmounts(userId, categoryName, newExpenseAmount)
     
       // N.B to fix sheet doesn't update before useeffect reruns
       setNewExpenseName('');
       setNewExpenseAmount('');
       setAddExpense(false)
-      setUpdateExpense(true)
-    // }
+      setUpdate(true)
   };
 
   const deleteExpense = (expenseName: string) => {
 
     deleteExpenses(categoryName, userId, expenseName)
-    .then(res => console.log(res))
     .catch(err => console.log(err))
-    
-    //  const updatedExpenses = expenses.filter(expense => expense.name !== expenseName)
-    //  console.log(updatedExpenses);
-    //  setExpenses(updatedExpenses);
-     setUpdateExpense(true)
-
+    setUpdate(true)
   }
 
   return (

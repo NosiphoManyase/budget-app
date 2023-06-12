@@ -18,7 +18,7 @@ const MainContent = () => {
   const [categoryName, setCategoryName] = useState("");
   const [allocationAmount, setAllocationAmount] = useState(0);
   const [showExpense, setShowExpense] = useState(false);
-  const [updateExpense, setUpdateExpense] = useState(false);
+  const [update, setUpdate] = useState(false);
 
   const sheetName = 'Categories'
   const userId = 'Nosi123'
@@ -42,8 +42,8 @@ const MainContent = () => {
         .catch(error => {
           console.error('Error fetching data:', error);
         });
-    
-  }, [updateExpense]);
+    setUpdate(false)
+  }, [update]);
 
   const handleCreateBudget = () => {
     setCreatingBudget(true);
@@ -65,14 +65,16 @@ const MainContent = () => {
       const newCategoryArray = Object.values(newCategory)
       updateData(newCategoryArray, sheetName) 
 
-      setCategoryName("");
-      setAllocationAmount(0);
     }
+
+    setCategoryName("");
+    setAllocationAmount(0);
+
   };
 
   const handleDone = () => {
     setCreatingBudget(false);
-    setUpdateExpense(true);
+    setUpdate(true);
   };
 
   const showCategoryExpenses = (categoryName: string) => {
@@ -83,6 +85,8 @@ const MainContent = () => {
   const handleDeleteCategory = (categoryName: string) => {
     deleteExpenses(categoryName, userId);
     deleteCategory(categoryName, userId)
+    setUpdate(true)
+    setShowExpense(false)
   }
 
   return (
@@ -136,8 +140,8 @@ const MainContent = () => {
                         {/* <PopUpExpenses
                         setShowExpense={setShowExpense}
                         categoryName={category.categoryName}
-                        setUpdateExpense={setUpdateExpense}
-                        updateExpense={updateExpense}
+                        setUpdate={setUpdate}
+                        update={update}
                       /> */}
                       <p
                       onClick={() => showCategoryExpenses(category.categoryName)}
@@ -155,8 +159,8 @@ const MainContent = () => {
               <Expenses 
                 setShowExpense={setShowExpense}
                 categoryName={categoryName}
-                setUpdateExpense={setUpdateExpense}
-                updateExpense={updateExpense}
+                setUpdate={setUpdate}
+                update={update}
               />
               
             )}

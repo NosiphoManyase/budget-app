@@ -38,6 +38,45 @@ export const updateData = (newData: (string | number) [], sheetName: string) => 
       'Content-Type': 'application/json',
     },
   })
+
+}
+
+export const updateAmounts = (userId: string, categoryName: string, expenseAmount: string) =>{
+  return fetchData(userId, "Categories")
+  .then(data => {
+    //find index of current category
+    const categoryIndex = data.findIndex(data => data[0] === userId && data[1] === categoryName)
+    console.log(categoryIndex)
+    // get total Amount + parsefloat(newData[3])
+    if(categoryIndex != -1){
+      console.log(data, categoryIndex)
+      // get and update amounts from current category
+      const categories: string[] = data
+      const category = categories[categoryIndex]
+      const totalAmount = parseInt(category[2])
+      const amountUsed = parseInt(category[3]) + parseInt(expenseAmount)
+      const percentUsed = (amountUsed / totalAmount) * 100 + '%'
+
+      const updatedCategory = [userId, categoryName, totalAmount, amountUsed,  percentUsed]
+      console.log(categoryIndex)
+      console.log(category)
+
+      return fetch(`${ApiUrl}&category=Categories`, {
+        method: 'POST',
+        body: JSON.stringify({
+          operation: 'updateAll',
+          range: `Categories!${categoryIndex + 2}:${categoryIndex + 2}`,
+          data: [updatedCategory],
+      }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    }
+    //calc percent used
+    //update amount and percent used
+
+  })
 }
 
 export const deleteExpenses = ( categoryName: string, userId: string, expenseName?: string) => {

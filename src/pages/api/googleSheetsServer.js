@@ -55,6 +55,16 @@ async function handler(req, res) {
           },   
       });
 
+      }else if (req.body.operation == 'updateAll'){
+
+        const response = await sheets.spreadsheets.values.update({
+          spreadsheetId: req.query.id,
+          range: req.body.range,
+          valueInputOption: 'RAW',
+          resource: {
+            values: req.body.data
+          },
+        })
       }
 
       res.status(200).json({ message: res.data });
