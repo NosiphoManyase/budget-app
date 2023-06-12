@@ -41,7 +41,7 @@ export const updateData = (newData: (string | number) [], sheetName: string) => 
 
 }
 
-export const updateAmounts = (userId: string, categoryName: string, expenseAmount: string) =>{
+export const updateAmounts = (userId: string, categoryName: string, expenseAmount?: number) =>{
   return fetchData(userId, "Categories")
   .then(data => {
     //find index of current category
@@ -49,17 +49,23 @@ export const updateAmounts = (userId: string, categoryName: string, expenseAmoun
     console.log(categoryIndex)
     // get total Amount + parsefloat(newData[3])
     if(categoryIndex != -1){
-      console.log(data, categoryIndex)
+      
       // get and update amounts from current category
       const categories: string[] = data
       const category = categories[categoryIndex]
-      const totalAmount = parseInt(category[2])
-      const amountUsed = parseInt(category[3]) + parseInt(expenseAmount)
-      const percentUsed = (amountUsed / totalAmount) * 100 + '%'
 
+      const totalAmount = parseInt(category[2])
+      let amountUsed: number;
+      let percentUsed: string;
+      if(expenseAmount){
+        amountUsed = parseInt(category[3]) + expenseAmount
+        percentUsed = (amountUsed / totalAmount) * 100 + '%'
+      }else {
+        amountUsed = 0;
+        percentUsed='0%'
+      }
       const updatedCategory = [userId, categoryName, totalAmount, amountUsed,  percentUsed]
-      console.log(categoryIndex)
-      console.log(category)
+      console.log(updatedCategory)
 
       return fetch(`${ApiUrl}&category=Categories`, {
         method: 'POST',

@@ -25,7 +25,7 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdate, update, 
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [addExpense, setAddExpense] = useState(false)
   const [newExpenseName, setNewExpenseName] = useState('');
-  const [newExpenseAmount, setNewExpenseAmount] = useState('');
+  const [newExpenseAmount, setNewExpenseAmount] = useState(0);
 
   const sheetName = 'Expenses'
   const userId = 'Nosi123'
@@ -48,6 +48,7 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdate, update, 
       setUpdate(false)
   }, [update]);
 
+
   const handleAddExpense = () => {
     const expense = [userId, categoryName, newExpenseName, newExpenseAmount]
     updateData(expense, sheetName)
@@ -55,16 +56,24 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdate, update, 
     
       // N.B to fix sheet doesn't update before useeffect reruns
       setNewExpenseName('');
-      setNewExpenseAmount('');
+      setNewExpenseAmount(0);
       setAddExpense(false)
       setUpdate(true)
   };
 
-  const deleteExpense = (expenseName: string) => {
+
+  const deleteExpense = (expenseName: string, expenseAmount: number) => {
 
     deleteExpenses(categoryName, userId, expenseName)
+    updateAmounts(userId, categoryName, -expenseAmount)
     .catch(err => console.log(err))
     setUpdate(true)
+  }
+
+  const resetExpenses = () => {
+    deleteExpenses(categoryName, userId)
+    updateAmounts(userId, categoryName)
+    setExpenses([])
   }
 
   return (
@@ -72,7 +81,7 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdate, update, 
       <h1>Expenses</h1>
       <div onClick={() => setShowExpense(false)}>x</div>
       <button onClick={() => setAddExpense(true)}>Add New</button>
-      <button onClick={() => setExpenses([])}>Reset Expenses</button>
+      <button onClick={resetExpenses}>Reset Expenses</button>
 
       {addExpense && (
         <div>
@@ -84,7 +93,7 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdate, update, 
           <input
             placeholder="Expense Amount"
             value={newExpenseAmount}
-            onChange={(e) => setNewExpenseAmount(e.target.value)}
+            onChange={(e) => setNewExpenseAmount(parseInt(e.target.value))}
           />
           <button onClick={handleAddExpense}>Add</button>
         </div>
@@ -101,7 +110,7 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdate, update, 
               <div key={index} className='flex justify-evenly'>
                 <p>{expense.name}</p>
                 <p>{expense.amount}</p>
-                <button onClick={() => deleteExpense(expense.name)}>delete</button>
+                <button onClick={() => deleteExpense(expense.name, expense.amount)}>delete</button>
               </div>
             ))}
         </div>
