@@ -3,6 +3,7 @@ import Expenses from "./Expenses";
 import PopUpExpenses from "./PopUpExpenses";
 import { EyeOpenIcon } from '@radix-ui/react-icons';
 import { deleteCategory, deleteExpenses, fetchData, updateData } from "@/data/data";
+import Spinner from "./Spinner";
 
 export type BudgetCategory = {
   userId: string,
@@ -16,7 +17,7 @@ const MainContent = () => {
   const [budgetCategories, setBudgetCategories] = useState<BudgetCategory[]>([]);
   const [creatingBudget, setCreatingBudget] = useState(false);
   const [categoryName, setCategoryName] = useState("");
-  const [allocationAmount, setAllocationAmount] = useState(0);
+  const [allocationAmount, setAllocationAmount] = useState("");
   const [showExpense, setShowExpense] = useState(false);
   const [update, setUpdate] = useState(false);
 
@@ -45,14 +46,11 @@ const MainContent = () => {
     setUpdate(false)
   }, [update]);
 
-  const handleCreateBudget = () => {
-    setCreatingBudget(true);
-  };
-
   const handleAddCategory = () => {
-    const amount = allocationAmount;
+    //nb check if user p
+    const amount = Number(allocationAmount);
   
-    if (categoryName && !isNaN(amount)) {
+    if (categoryName) {
 
       const newCategory: BudgetCategory = {
         userId,
@@ -68,13 +66,10 @@ const MainContent = () => {
     }
 
     setCategoryName("");
-    setAllocationAmount(0);
-
-  };
-
-  const handleDone = () => {
+    setAllocationAmount('R');
     setCreatingBudget(false);
     setUpdate(true);
+
   };
 
   const showCategoryExpenses = (categoryName: string) => {
@@ -90,52 +85,35 @@ const MainContent = () => {
   }
 
   return (
-    <div className="flex w-full h-screen px-4 py-4">
-      <div className="w-[15%] border-r border-gray-400">
-        <button onClick={() => setCreatingBudget(true)}>Add Category</button>
-      </div>
+    <div className="w-full h-screen px-4 py-4">
+     
         {!budgetCategories.length && !creatingBudget && (
-          <button onClick={handleCreateBudget}>Create Budget</button>
+          <div className="w-full h-[50%] flex items-center justify-center">
+            <Spinner />
+          </div>
         )}
+        
         {(budgetCategories.length || creatingBudget) && (
-          <div className="w-[70%] mx-auto">
-            {creatingBudget && (
-              <div className="my-6">
-                <div>
-                  <input
-                    placeholder="Budget Category Name"
-                    value={categoryName}
-                    onChange={(e) => setCategoryName(e.target.value)}
-                  />
-                  <input
-                    placeholder="Allocation Amount"
-                    value={allocationAmount}
-                    onChange={(e) =>
-                      setAllocationAmount(Number(e.target.value))
-                    }
-                  />
-                  <button onClick={handleAddCategory}>Add</button>
-                </div>
-                <button onClick={handleDone}>Done</button>
-              </div>
-            )}
+          <div className="w-[70%] mx-auto mb-[50px]">
 
             {budgetCategories.length > 0 && (
-              <div className="my-6">
-                <div className="">
-                  <div className="flex justify-between">
-                    <p>Category Name</p>
+              <div className="my-6 border-2 border-[#0a2f35] rounded-md">
+                  <div className="grid grid-cols-6 bg-[#0a2f35] items-center  p-1 text-white text-lg font-medium ">
+                    <p>Expense Categories</p>
                     <p>Total Allocation</p>
                     <p>Amount Used</p>
                     <p>Percent Used</p>
-                    <p>Expenses</p>
-                    <p>---</p>
+                    <p className="justify-self-center">Expenses</p>
+                    
                   </div>
                   {budgetCategories.map((category, index) => (
-                    <div key={index} className="flex justify-between">
-                      <p> {category.categoryName}</p>
+                  <div key={index}>
+                    <div  
+                      className="grid grid-cols-6 gap-1 p-1 items-center ml-1"
+                    >
+                      <p> {category.categoryName}</p> 
                       <p>R{category.allocationAmount}</p>
-                      <p>{category.amountUsed} </p>
+                      <p>R{category.amountUsed} </p>
                       <p>{category.percentUsed ? category.percentUsed : 0}%</p>
                         {/* <PopUpExpenses
                         setShowExpense={setShowExpense}
@@ -144,28 +122,74 @@ const MainContent = () => {
                         update={update}
                       /> */}
                       <p
-                      onClick={() => showCategoryExpenses(category.categoryName)}
+                        onClick={() => showCategoryExpenses(category.categoryName)}
+                        className="mx-auto"
                       >
                         <EyeOpenIcon />
                       </p>
-                      <p onClick={() => handleDeleteCategory(category.categoryName)}>delete</p>
+                      <p onClick={() => handleDeleteCategory(category.categoryName)}
+                        className="w-max text-[#272643] bg-[#f7a325] px-2 py-1 rounded-lg ml-auto mx-auto cursor-pointer">
+                        delete
+                      </p>
+                    </div>
+                    {/* don't underline last items */}
+                    {index != budgetCategories.length - 1 && <hr className="border-b border-[#272643] w-[98%] mx-auto"/>}
                     </div>
                   ))}
+                
+              </div>
+            )}
+
+             <div className="flex justify-between items-center"> 
+            <button onClick={() => setCreatingBudget(true)}
+              className="w-max text-white bg-[#f56038] px-4 py-2 rounded-lg font-semibold hover:shadow-lg"
+            >Add Category</button>
+            {creatingBudget && (<button onClick={() => setCreatingBudget(false)}
+              className='mr-2 border-2 border-black px-2 rounded-full'
+            >x</button>)
+            }
+            </div>
+
+            {creatingBudget && (
+              <div className="my-6">
+                <div className="border-2 border-[#272643] w-max rounded-md">
+                  <input
+                    placeholder="Expense Category Name"
+                    value={categoryName}
+                    
+                    onChange={(e) => setCategoryName(e.target.value)}
+                    className="focus:outline-none rounded-md px-1"
+                  />
+                  <input
+                    placeholder="Allocation Amount"
+                    value={allocationAmount}
+                    onChange={(e) =>
+                      setAllocationAmount(e.target.value)
+                    }
+                    className="focus:outline-none rounded-md px-1"
+                  />
+                  <button onClick={handleAddCategory}
+                    className="bg-[#0a2f35] text-white px-2 py-1 font-semibold"
+                  >add</button>
                 </div>
               </div>
             )}
 
-            {showExpense && (
-              <Expenses 
-                setShowExpense={setShowExpense}
-                categoryName={categoryName}
-                setUpdate={setUpdate}
-                update={update}
-              />
-              
-            )}
           </div>
         )}
+
+          {showExpense && (
+            <div className="w-[70%] mx-auto">
+            <Expenses 
+              setShowExpense={setShowExpense}
+              categoryName={categoryName}
+              setUpdate={setUpdate}
+              update={update}
+            />
+            </div>
+            
+          )}
+        
     </div>
   )
 }

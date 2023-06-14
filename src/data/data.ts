@@ -46,7 +46,7 @@ export const updateAmounts = (userId: string, categoryName: string, expenseAmoun
   .then(data => {
     //find index of current category
     const categoryIndex = data.findIndex(data => data[0] === userId && data[1] === categoryName)
-    console.log(categoryIndex)
+   
     // get total Amount + parsefloat(newData[3])
     if(categoryIndex != -1){
       
@@ -56,16 +56,15 @@ export const updateAmounts = (userId: string, categoryName: string, expenseAmoun
 
       const totalAmount = parseInt(category[2])
       let amountUsed: number;
-      let percentUsed: string;
+      let percentUsed: number;
       if(expenseAmount){
         amountUsed = parseInt(category[3]) + expenseAmount
-        percentUsed = (amountUsed / totalAmount) * 100 + '%'
+        percentUsed = (amountUsed / totalAmount) * 100 
       }else {
         amountUsed = 0;
-        percentUsed='0%'
+        percentUsed=0;
       }
       const updatedCategory = [userId, categoryName, totalAmount, amountUsed,  percentUsed]
-      console.log(updatedCategory)
 
       return fetch(`${ApiUrl}&category=Categories`, {
         method: 'POST',
@@ -89,7 +88,6 @@ export const deleteExpenses = ( categoryName: string, userId: string, expenseNam
   
   return fetchData(userId, 'Expenses')
     .then(data => {
-      console.log(data)
 
       const sortIndices = data.map((data, i) => {
         if(expenseName){
@@ -110,7 +108,6 @@ export const deleteExpenses = ( categoryName: string, userId: string, expenseNam
       }).filter(index => index !== -1);
 
       const indices: number[] = sortIndices;
-      console.log(indices)
       
       const deleteRequests = indices.map(rowIndex => {
         return {
@@ -124,8 +121,6 @@ export const deleteExpenses = ( categoryName: string, userId: string, expenseNam
           },
         };
       }).reverse();     
-
-      console.log(deleteRequests)
 
       return fetch(`${ApiUrl}&category=Expenses`, {
         method: 'POST',
@@ -147,7 +142,6 @@ export const deleteCategory = ( categoryName: string, userId: string) => {
     .then(data => {
 
       const categoryIndex = data.findIndex(category => category[0] === userId && category[1] === categoryName);
-      console.log(categoryIndex)
       
       const deleteRequest = {
           deleteDimension: {
