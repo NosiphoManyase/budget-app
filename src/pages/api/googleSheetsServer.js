@@ -41,6 +41,7 @@ async function handler(req, res) {
           },
           valueInputOption: 'RAW',
         });
+
       }else if(req.body.operation === 'delete'){
         // if deleting expenses/expense
         const deleteRequests = req.body.deleteRequests
@@ -48,6 +49,7 @@ async function handler(req, res) {
         const deleteRequest = req.body.deleteRequest
         
    
+        //specific sheet targeted inside deleteRequests/s 
         const response = await sheets.spreadsheets.batchUpdate({
           spreadsheetId: req.query.id,
           resource:{ 
@@ -65,6 +67,9 @@ async function handler(req, res) {
             values: req.body.data
           },
         })
+      }else if(req.body.operation == 'signup'){
+
+        
       }
 
       res.status(200).json({ message: res.data });

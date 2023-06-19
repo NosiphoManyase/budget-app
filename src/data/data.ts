@@ -1,4 +1,3 @@
-import { BudgetCategory } from "@/Components/MainContent"
 
 const ApiUrl = '/api/googleSheetsServer?id=1ULLXHjmMf0ZdDy7XSaWrdel_xbESp3lAwfcLISHQ6Pk'
 
@@ -27,6 +26,7 @@ export const fetchData = (
 
 export const updateData = (newData: (string | number) [], sheetName: string) => {
 
+  console.log(sheetName)
   // add Data to sheet
   const addToData = fetch(`${ApiUrl}&category=${sheetName}`, {
     method: 'POST',
@@ -37,8 +37,9 @@ export const updateData = (newData: (string | number) [], sheetName: string) => 
     headers: {
       'Content-Type': 'application/json',
     },
-  })
-
+  }).catch(error => {
+    console.error('Error fetching data:', error);
+  });
 }
 
 export const updateAmounts = (userId: string, categoryName: string, expenseAmount?: number) =>{
