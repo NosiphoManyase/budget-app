@@ -1,6 +1,7 @@
 import { fetchData } from '@/data/data';
+import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
 const login = () => {
     const [email, setEmail] = useState('');
@@ -14,11 +15,10 @@ const login = () => {
 
         try {
             const data = await fetchData(username, 'Users');
-            console.log('in fetch')
-            console.log(data);
             if (data) {
               setUserExists(true);
-              router.push('/?loggedIn=true')
+              Cookies.set('username', username)
+              router.push('/')
             }
         } catch (err) {
             console.log('in error')
@@ -30,20 +30,20 @@ const login = () => {
     }
 
   return (
-    <div>
-      <h2>Log in</h2>
-      <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email">Email:</label>
-          <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <h2>Log in</h2>
+        <form onSubmit={handleSubmit}>
+            <div>
+            <label htmlFor="email">Email:</label>
+            <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+            <div>
+            <label htmlFor="username">Username:</label>
+            <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
+            </div>
+            <button type="submit">log in</button>
+        </form>
         </div>
-        <div>
-          <label htmlFor="username">Username:</label>
-          <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
-        </div>
-        <button type="submit">log in</button>
-      </form>
-    </div>
   )
 }
 

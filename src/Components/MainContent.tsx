@@ -4,6 +4,8 @@ import PopUpExpenses from "./PopUpExpenses";
 import { EyeOpenIcon } from '@radix-ui/react-icons';
 import { deleteCategory, deleteExpenses, fetchData, updateData } from "@/data/data";
 import Spinner from "./Spinner";
+import { useRouter } from "next/router";
+import Cookies from "js-cookie";
 
 export type BudgetCategory = {
   userId: string,
@@ -22,7 +24,10 @@ const MainContent = () => {
   const [update, setUpdate] = useState(false);
 
   const sheetName = 'Categories'
-  const userId = 'Nosi123'
+  const router = useRouter()
+  const username = Cookies.get('username')
+  // console.log(username)
+  const userId = String(username)
 
   useEffect(() => {
   
@@ -98,7 +103,7 @@ const MainContent = () => {
 
             {budgetCategories.length > 0 && (
               <div className="my-6 border-2 border-[#0a2f35] rounded-md">
-                  <div className="grid grid-cols-6 bg-[#0a2f35] items-center  p-1 text-white text-lg font-medium ">
+                  <div className="grid grid-cols-6 border-2 border-b-8 border-[#0a2f35] rounded-t-md items-center  p-1 text-lg font-medium ">
                     <p>Expense Categories</p>
                     <p>Total Allocation</p>
                     <p>Amount Used</p>

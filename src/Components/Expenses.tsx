@@ -1,6 +1,8 @@
 import { deleteExpenses, fetchData, updateAmounts, updateData } from '@/data/data';
 import React, { useState, Dispatch, SetStateAction, useEffect } from 'react';
 import Spinner from './Spinner';
+import { useRouter } from 'next/router';
+import Cookies from 'js-cookie';
 
 type Expense = {
   name: string;
@@ -22,7 +24,9 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdate, update, 
   const [loading, setLoading] = useState(false);
 
   const sheetName = 'Expenses'
-  const userId = 'Nosi123'
+  const router = useRouter()
+  const username = Cookies.get('username')
+  const userId = String(username)
 
   useEffect(() => {
     
@@ -126,8 +130,8 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdate, update, 
         </div>
         <div >
             {expenses.map((expense, index) => (
-              <>
-              <div key={index} className='grid grid-cols-3 py-1 items-center ml-1'>
+              <div key={index} >
+              <div className='grid grid-cols-3 py-1 items-center ml-1'>
                 <p>{expense.name}</p>
                 <p>{expense.amount}</p>
                 <button onClick={() => deleteExpense(expense.name, expense.amount)}
@@ -136,7 +140,7 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdate, update, 
               </div>
               {/* don't underline last items */}
               {index != expenses.length - 1 && <hr className="border-b border-[#272643] w-[98%] mx-auto"/>}
-              </>
+              </div>
             ))}
         </div>
         </div>
