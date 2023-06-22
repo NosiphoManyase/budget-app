@@ -38,7 +38,7 @@ export default function App() {
           log out
         </div>
       </div>
-
+    
       {!username && (
         <div>
           <div className="w-[80%] h-screen mx-auto flex items-center mt-[-50px]">
