@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Expenses from "./Expenses";
-import PopUpExpenses from "./PopUpExpenses";
+// import PopUpExpenses from "./PopUpExpenses";
 import { EyeOpenIcon } from '@radix-ui/react-icons';
 import { deleteCategory, deleteExpenses, fetchData, updateData } from "@/data/data";
 import Spinner from "./Spinner";
