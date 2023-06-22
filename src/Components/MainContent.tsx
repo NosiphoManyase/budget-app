@@ -122,7 +122,7 @@ const MainContent = () => {
                       <p>{category.percentUsed ? category.percentUsed : 0}%</p>
                         {/* <PopUpExpenses
                         setShowExpense={setShowExpense}
-                        categoryName={category.categoryName}
+                        categoryName={category.categoryName}  
                         setUpdate={setUpdate}
                         update={update}
                       /> */}

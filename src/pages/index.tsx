@@ -29,16 +29,6 @@ export default function App() {
 
   return (
     <div className="bg-gray-50">
-      <div className="flex justify-center items-center mx-4">
-        <NavBar />
-        <div
-          className="mt-4 bg-red-300 text-red-700 px-2 py-1 rounded-md hover:shadow-lg"
-          onClick={handleLogout}
-        >
-          log out
-        </div>
-      </div>
-    
       {!username && (
         <div>
           <div className="w-[80%] h-screen mx-auto flex items-center mt-[-50px]">
@@ -63,7 +53,20 @@ export default function App() {
         </div>
       )}
 
-      {username != undefined && <MainContent />}
+      {username != undefined && (
+        <>
+          <div className="flex justify-center items-center mx-4">
+            <NavBar />
+            <div
+              className="mt-4 bg-red-300 text-red-700 px-2 py-1 rounded-md hover:shadow-lg"
+              onClick={handleLogout}
+            >
+              log out
+            </div>
+          </div>
+          <MainContent />
+        </>
+      )}
     </div>
   );
 }
