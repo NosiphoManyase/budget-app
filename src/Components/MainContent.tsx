@@ -71,7 +71,7 @@ const MainContent = () => {
     }
 
     setCategoryName("");
-    setAllocationAmount('R');
+    setAllocationAmount("");
     setCreatingBudget(false);
     setUpdate(true);
 
@@ -99,11 +99,11 @@ const MainContent = () => {
         )}
         
         {(budgetCategories.length || creatingBudget) && (
-          <div className="w-[70%] mx-auto mb-[50px]">
+          <div className="w-[80%] mx-auto mb-[50px]">
 
             {budgetCategories.length > 0 && (
-              <div className="my-6 border-2 border-[#0a2f35] rounded-md">
-                  <div className="grid grid-cols-6 border-2 border-b-8 border-[#0a2f35] rounded-t-md items-center  p-1 text-lg font-medium ">
+              <div className="my-6 rounded-md  bg-indigo-100 shadow-xl">
+                  <div className="grid grid-cols-6 px-4 py-2 bg-indigo-300 rounded-t-md items-center  p-1 text-lg font-semibold ">
                     <p>Expense Categories</p>
                     <p>Total Allocation</p>
                     <p>Amount Used</p>
@@ -112,9 +112,10 @@ const MainContent = () => {
                     
                   </div>
                   {budgetCategories.map((category, index) => (
-                  <div key={index}>
+                  <div key={index}
+                  className="px-4 py-2">
                     <div  
-                      className="grid grid-cols-6 gap-1 p-1 items-center ml-1"
+                      className="grid grid-cols-6 gap-1 p-1 pb-0 items-center ml-1"
                     >
                       <p> {category.categoryName}</p> 
                       <p>R{category.allocationAmount}</p>
@@ -133,12 +134,12 @@ const MainContent = () => {
                         <EyeOpenIcon />
                       </p>
                       <p onClick={() => handleDeleteCategory(category.categoryName)}
-                        className="w-max text-[#272643] bg-[#f7a325] px-2 py-1 rounded-lg ml-auto mx-auto cursor-pointer">
+                        className="w-max text-[#272643] bg-amber-200 border-2 border-amber-400 font-semibold px-2 py-1 rounded-lg ml-auto mx-auto cursor-pointer">
                         delete
                       </p>
                     </div>
                     {/* don't underline last items */}
-                    {index != budgetCategories.length - 1 && <hr className="border-b border-[#272643] w-[98%] mx-auto"/>}
+                    {index != budgetCategories.length - 1 && <hr className="border-b border-gray-300 w-[98%] mx-auto mt-1"/>}
                     </div>
                   ))}
                 
@@ -147,7 +148,7 @@ const MainContent = () => {
 
              <div className="flex justify-between items-center"> 
             <button onClick={() => setCreatingBudget(true)}
-              className="w-max text-white bg-[#f56038] px-4 py-2 rounded-lg font-semibold hover:shadow-lg"
+              className="w-max text-white bg-teal-600 px-4 py-2 rounded-lg font-semibold hover:shadow-lg"
             >Add Category</button>
             {creatingBudget && (<button onClick={() => setCreatingBudget(false)}
               className='mr-2 border-2 border-black px-2 rounded-full'

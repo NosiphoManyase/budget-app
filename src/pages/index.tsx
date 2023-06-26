@@ -19,7 +19,6 @@ export default function App() {
     } else {
       setUsername(null);
     }
-    console.log("username: " + username);
   }, [loggedOut]);
 
   const handleLogout = () => {

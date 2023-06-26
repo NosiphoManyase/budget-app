@@ -86,7 +86,7 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdate, update, 
       </div>
       <div className='flex justify-between'>
         <button onClick={() => setAddExpense(true)}
-          className='text-white bg-gray-900 px-4 py-1 rounded-lg font-semibold'
+          className='text-white bg-teal-600 px-4 py-1 rounded-lg font-semibold'
         >Add New</button>
         <button onClick={resetExpenses}
           className='text-white bg-[#f56038] px-4 py-1 rounded-lg font-semibold'
@@ -123,23 +123,24 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdate, update, 
       )}
 
       {expenses.length > 0 && (
-        <div className='w-[50%] mt-[30px] border-2 border-[#f56038]  rounded-md'>
-        <div className='grid grid-cols-3 bg-[#f56038] text-white text-lg font-medium '>
+        <div className='w-[50%] mt-[30px] bg-orange-300 text-gray-700 rounded-md shadow-xl'>
+        <div className='grid grid-cols-3 bg-orange-500 text-lg font-semibold px-4 py-2 rounded-t-lg'>
           <p>Expense</p>
           <p>Amount</p>
         </div>
         <div >
             {expenses.map((expense, index) => (
-              <div key={index} >
+              <div key={index} 
+              className="px-4 py-2">
               <div className='grid grid-cols-3 py-1 items-center ml-1'>
                 <p>{expense.name}</p>
                 <p>{expense.amount}</p>
                 <button onClick={() => deleteExpense(expense.name, expense.amount)}
-                 className='w-max text-[#272643] bg-[#f7a325] px-2 py-1 rounded-lg ml-auto mx-auto cursor-pointer'
+                 className='w-max bg-amber-200 font-semibold px-2 py-1 border-2 border-amber-400 rounded-lg ml-auto mx-auto cursor-pointer'
                 >delete</button>   
               </div>
               {/* don't underline last items */}
-              {index != expenses.length - 1 && <hr className="border-b border-[#272643] w-[98%] mx-auto"/>}
+              {index != expenses.length - 1 && <hr className="border-b border-orange-400 w-[98%] mx-auto mt-1"/>}
               </div>
             ))}
         </div>
