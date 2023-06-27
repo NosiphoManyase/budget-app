@@ -5,7 +5,6 @@ export const fetchData = (
    userId: string,
    sheetName: string,
 ) => {
-  console.log('Fetching')
 
   return fetch( `${ApiUrl}&category=${sheetName}`, {
     method: 'GET',
@@ -14,7 +13,6 @@ export const fetchData = (
     },
   }).then(res => res.json())
   .then(data =>{ 
-    console.log('daar:', data)
     //remove first line with headings
     data.values.splice(0, 1)
 
@@ -27,7 +25,7 @@ export const fetchData = (
 }
 
 export const updateData = (newData: (string | number) [], sheetName: string) => {
-
+  console.log('fetching')
   // add Data to sheet
   const addToData = fetch(`${ApiUrl}&category=${sheetName}`, {
     method: 'POST',

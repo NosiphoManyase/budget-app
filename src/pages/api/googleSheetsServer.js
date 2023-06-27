@@ -75,15 +75,13 @@ async function handler(req, res) {
       res.status(200).json({ message: res.data });
 
     }else if(req.method === 'GET'){
-      console.log('in get')
       const data = response.data
       res.json(data)
-      console.log('apidata', data)
     }
 
   } catch (error) {
     console.error("Google Sheets API Error:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
   } 
 
 }
