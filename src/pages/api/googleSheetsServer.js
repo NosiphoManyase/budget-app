@@ -21,7 +21,7 @@ async function handler(req, res) {
     range: `${req.query.category}!A:E`
   })
 
-  //get last row in sheet
+  //get last row in sheet to get range
   const lastRow = response.data.values ? response.data.values.length + 1: 1
   const range = `${req.query.category}!A${lastRow}:E${lastRow}`
 
