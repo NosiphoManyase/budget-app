@@ -14,6 +14,7 @@ export const fetchData = (
     },
   }).then(res => res.json())
   .then(data =>{ 
+    console.log('daar:', data)
     //remove first line with headings
     data.values.splice(0, 1)
 
