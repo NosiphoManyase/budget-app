@@ -98,18 +98,18 @@ const Expenses: React.FC<ExpensesProps> = ({ setShowExpense, setUpdate, update, 
           {addExpense && (<button onClick={() => setAddExpense(false)}
             className='self-end mr-2 mt-2 border-2 border-black px-2 rounded-full'
           >x</button>)}
-        <div className="border-2 border-[#272643] w-max rounded-md my-6">
+        <div className="md:border-2 border-[#272643] md:w-max rounded-md my-6">
           <input
             placeholder="Expense Name"
             value={newExpenseName}
             onChange={(e) => setNewExpenseName(e.target.value)}
-            className="focus:outline-none rounded-md px-1"
+            className="focus:outline-none rounded-md px-1 mb-2 md:mb-0 block md:inline-block border-2 border-[#272643] md:border-none"
           />
           <input
             placeholder="Expense Amount"
             value={newExpenseAmount}
             onChange={(e) => setNewExpenseAmount(parseInt(e.target.value))}
-            className="focus:outline-none rounded-md px-1"
+            className="focus:outline-none rounded-md px-1 mb-2 md:mb-0 block md:inline-block border-2 border-[#272643] md:border-none"
           />
           <button onClick={handleAddExpense}
             className="bg-[#0a2f35] text-white px-2 py-1 font-semibold"

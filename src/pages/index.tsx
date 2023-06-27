@@ -54,14 +54,14 @@ export default function App() {
 
       {username != undefined && (
         <>
-          <div className="flex justify-center items-center mx-4">
+          <div className="flex justify-center items-center mx-4 border-b-4 border-[#272643] md:border-none">
             <NavBar />
-            <div
-              className="mt-4 bg-red-300 text-red-700 px-2 py-1 rounded-md hover:shadow-lg"
+            <button
+              className="bg-red-300 text-red-700 px-2 py-1 rounded-md hover:shadow-lg"
               onClick={handleLogout}
             >
               log out
-            </div>
+            </button>
           </div>
           <MainContent />
         </>
