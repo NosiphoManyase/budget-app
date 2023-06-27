@@ -1,5 +1,5 @@
 
-const ApiUrl = 'https://budget-app-git-main-nosiphomanyase.vercel.app/api/googleSheetsServer?id=1ULLXHjmMf0ZdDy7XSaWrdel_xbESp3lAwfcLISHQ6Pk'
+const ApiUrl = 'https://budget-app-klyl.vercel.app/api/googleSheetsServer?id=1ULLXHjmMf0ZdDy7XSaWrdel_xbESp3lAwfcLISHQ6Pk'
 
 export const fetchData = (
    userId: string,
