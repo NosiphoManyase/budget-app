@@ -22,7 +22,7 @@ const Login = () => {
             }
         } catch (err) {
             console.log('in error')
-            console.error(err);
+            console.error('Error: ',err);
             // Reset email/password
             setInvalidDetails(false);
         }
