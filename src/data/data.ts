@@ -1,6 +1,7 @@
 
-const ApiUrl = 'https://budget-app-klyl.vercel.app/api/googleSheetsServer?id=1ULLXHjmMf0ZdDy7XSaWrdel_xbESp3lAwfcLISHQ6Pk'
+const ApiUrl = '/api/googleSheetsServer?id=1ULLXHjmMf0ZdDy7XSaWrdel_xbESp3lAwfcLISHQ6Pk'
 
+// https://budget-app-klyl.vercel.app/
 export const fetchData = (
    userId: string,
    sheetName: string,
