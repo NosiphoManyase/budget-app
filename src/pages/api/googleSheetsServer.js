@@ -9,18 +9,18 @@ async function handler(req, res) {
     },
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
-  console.log('auth: ',auth);
+  
   const sheets = google.sheets({
     auth,
     version: "v4",
   });
-  console.log('sheets: ',sheets);
+  
 
   const response = await sheets.spreadsheets.values.get({
     spreadsheetId: req.query.id,
     range: `${req.query.category}!A:E`
   })
-  console.log('response: ',response);
+  
   //get last row in sheet to get range
   const lastRow = response.data.values ? response.data.values.length + 1: 1
   const range = `${req.query.category}!A${lastRow}:E${lastRow}`
