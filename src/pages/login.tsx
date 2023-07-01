@@ -1,30 +1,31 @@
 import { fetchData } from "@/data/data";
 import Cookies from "js-cookie";
 import { useRouter } from "next/router";
+import {collection, getDocs}  from 'firebase/firestore'
 import React, { useState } from "react";
+import { auth } from "../../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
-  const [userExists, setUserExists] = useState(false);
-  const [invalidDetails, setInvalidDetails] = useState(true);
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
-      const data = await fetchData(username, "Users");
-      if (data) {
-        setUserExists(true);
-        Cookies.set("username", username);
-        router.push("/");
-      }
-    } catch (err) {
-      console.log("in error");
-      console.error("Error: ", err);
-      // Reset email/password
-      setInvalidDetails(false);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      setLoginError(false)
+
+      router.push('/home')
+    } catch (error) {
+
+      console.error("Login error:", error);
+      setLoginError(true)
     }
   };
 
@@ -71,6 +72,22 @@ const Login = () => {
               className="w-full px-4 py-2 outline-none rounded-r-lg "
             />
           </div>
+          <div className="w-full flex border-2 border-orange-600 rounded-lg">
+            <label
+              htmlFor="password"
+              className="block w-1/7 px-4 py-2 bg-orange-600 text-white font-semibold rounded-l-md"
+            >
+              Password:
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 outline-none rounded-r-lg "
+            />
+          </div>
+          {loginError && <p>email, username or password is incorrect! Try again</p>}
           <button
             type="submit"
             className="border-2 px-3 py-2 rounded-xl border-orange-700 bg-white text-orange-700 font-semibold hover:text-lg"
